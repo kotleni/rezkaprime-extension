@@ -2,26 +2,22 @@
 import {defineConfig} from 'vite';
 import react from '@vitejs/plugin-react';
 import {resolve} from 'path';
+import tailwindcss from '@tailwindcss/vite';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [react()],
+    plugins: [react(), tailwindcss()],
     build: {
         rollupOptions: {
             input: {
-                // Our popup is the default entry, linked by index.html
                 popup: resolve(__dirname, 'index.html'),
-                // Our background script
                 background: resolve(__dirname, 'src/background/main.ts'),
-                // Our content script
-                content: resolve(__dirname, 'src/content/main.ts'),
+                content: resolve(__dirname, 'src/content/main.tsx'),
+                styles: resolve(__dirname, 'src/index.css'),
             },
             output: {
-                // The name of the script files
                 entryFileNames: '[name].js',
-                // The name of the chunk files
                 chunkFileNames: 'chunks/[name].js',
-                // The name of the asset files
                 assetFileNames: 'assets/[name].[ext]',
             },
         },

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.11",
+    "@tailwindcss/vite": "^4.1.11",
     "@typescript-eslint/parser": "^8.35.1",
     "eslint": "8.57.1",
     "eslint-config-prettier": "9.1.0",
