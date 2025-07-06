@@ -2,7 +2,7 @@
   background: #e1e289;
   color: black;
 
-  width: 200%;
+  width: calc(200% - 15px);
   margin-left: 30px;
   margin-right: 30px;
   padding: 8px;
