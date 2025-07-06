@@ -1,7 +1,30 @@
 .rezka-prime-toolbar {
   background: #e1e289;
+  color: black;
+
   width: 200%;
   margin-left: 30px;
   margin-right: 30px;
+  padding: 8px;
   translate: 0 -8px;
+
+  display: flex;
+  justify-content: end;
+  gap: 8px;
+}
+
+.rezka-button {
+  width: fit-content;
+  background-color: #2d2d2d;
+  color: white;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.rezka-button:hover {
+  background-color: #4d4d4d;
+}
+
+.rezka-select {
+  border: none;
 }

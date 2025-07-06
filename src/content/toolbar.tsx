@@ -6,11 +6,15 @@ export function ControlPanel() {
 
     return (
         <div className="rezka-prime-toolbar">
-            <h3 className="">My Extension Panel</h3>
-            <p className="">aaaa</p>
-            <div onClick={handleDownload} className="">
+            <h3 className="">Rezka Prime</h3>
+            <select className="rezka-select">
+                <option>480p</option>
+                <option>720p</option>
+                <option>1080p</option>
+            </select>
+            <div onClick={handleDownload} className="rezka-button">
                 {/* {downloadIconContent} */}
-                <span>Download Video</span>
+                <span>Download</span>
             </div>
         </div>
     );
