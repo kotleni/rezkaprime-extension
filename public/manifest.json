@@ -8,7 +8,9 @@
   },
   "permissions": [
     "activeTab",
-    "storage"
+    "storage",
+    "tabs",
+    "scripting"
   ],
   "action": {
     "default_icon": "icon48.png",
@@ -22,7 +24,8 @@
     {
       "matches": ["<all_urls>"],
       "js": ["content.js"],
-      "css": ["assets/styles.css"]
+      "css": ["assets/styles.css"],
+      "world" : "MAIN"
     }
   ]
 }

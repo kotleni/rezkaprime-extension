@@ -8,8 +8,8 @@ const targetElement = document.getElementsByClassName(
 )[0];
 
 // Remove old root if exist
-const oldRoot = targetElement.getElementsByTagName('div')
-if(oldRoot[0]) {
+const oldRoot = targetElement.getElementsByTagName('div');
+if (oldRoot[0]) {
     oldRoot[0].remove();
 }
 
