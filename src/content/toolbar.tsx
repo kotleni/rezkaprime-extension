@@ -183,6 +183,7 @@ export function ControlPanel() {
         new VideoDownloader(),
     );
     const [downloadProgress, setDownloadProgress] = useState<number>(0);
+    const [downloadUrl, setDownloadingUrl] =  useState<string>('');
 
     const isSourcesLoaded = sources.length > 0;
     const isDownloading = downloadProgress > 0;
@@ -217,37 +218,11 @@ export function ControlPanel() {
                     setDownloadProgress(progress);
                 } else if (state instanceof FinishedState) {
                     const file = state.file;
-                    const downloadUrl = URL.createObjectURL(file);
+                    setDownloadingUrl(URL.createObjectURL(file));
 
-                    const runtime =
-                        typeof browser !== 'undefined'
-                            ? browser.runtime
-                            : chrome.runtime;
-
-                    runtime.sendMessage(
-                        {
-                            type: 'DOWNLOAD_VIDEO',
-                            payload: {
-                                url: downloadUrl,
-                                filename: 'video.mp4',
-                            },
-                        },
-                        response => {
-                            if (response?.status === 'success') {
-                                console.log(
-                                    'Download started by background script.',
-                                );
-                            } else {
-                                console.error(
-                                    'Background script failed to start download.',
-                                );
-                            }
-                            // Once the message is sent and the Blob URL is used, we can revoke it.
-                            // The background script will handle the download from its own context.
-                            URL.revokeObjectURL(downloadUrl);
-                            setDownloadProgress(0);
-                        },
-                    );
+                    // TODO:
+                    // URL.revokeObjectURL(downloadUrl);
+                    setDownloadProgress(0);
                 }
             };
             videoDownloader.downloadFromSource(selectedSource);
@@ -266,6 +241,7 @@ export function ControlPanel() {
             </div>
             <div className="rezka-prime-toolbar-right">
                 <span>
+                    {downloadUrl && (<a href={downloadUrl} download>Save</a>)}
                     {isDownloading && (
                         <div className="progress-bar-container">
                             <div
