@@ -14,6 +14,11 @@ reportBtn?.remove();
 const reportBtnDesc = document.getElementsByClassName('b-post__support_holder');
 reportBtnDesc[0].remove();
 
+// TODO: Add toggle setting
+// Remove warnings under player
+const warningMsg = document.getElementsByClassName('b-post__wait_status');
+warningMsg[0].innerHTML = '';
+
 const targetElement = document.getElementsByClassName(
     'b-post__social_holder_wrapper',
 )[0];
