@@ -182,8 +182,10 @@ export function ControlPanel() {
     const [videoDownloader, setVideoDownloader] = useState(
         new VideoDownloader(),
     );
+    const [downloadProgress, setDownloadProgress] = useState<number>(0);
 
     const isSourcesLoaded = sources.length > 0;
+    const isDownloading = downloadProgress > 0;
 
     const fetchSources = async () => {
         const sources = await new CDNPlayerWrapper().fetchVideoSources();
@@ -210,20 +212,45 @@ export function ControlPanel() {
             videoDownloader.onStateChanged = state => {
                 console.log(state);
 
-                if (state instanceof FinishedState) {
+                if (state instanceof InProgressState) {
+                    const progress = state.progress;
+                    setDownloadProgress(progress);
+                } else if (state instanceof FinishedState) {
                     const file = state.file;
                     const downloadUrl = URL.createObjectURL(file);
-                    const downloading = browser.downloads.download({
-                        url: downloadUrl,
-                        filename: 'video.mp4',
-                        conflictAction: 'uniquify',
-                    });
-                }
-            };
-            videoDownloader.downloadFromSource(selectedSource);
 
-            const resultFile = window.URL.createObjectURL(file);
-            console.log(resultFile);
+                    const runtime =
+                        typeof browser !== 'undefined'
+                            ? browser.runtime
+                            : chrome.runtime;
+
+                    runtime.sendMessage(
+                        {
+                            type: 'DOWNLOAD_VIDEO',
+                            payload: {
+                                url: downloadUrl,
+                                filename: 'video.mp4',
+                            },
+                        },
+                        response => {
+                            if (response?.status === 'success') {
+                                console.log(
+                                    'Download started by background script.',
+                                );
+                            } else {
+                                console.error(
+                                    'Background script failed to start download.',
+                                );
+                            }
+                            // Once the message is sent and the Blob URL is used, we can revoke it.
+                            // The background script will handle the download from its own context.
+                            URL.revokeObjectURL(downloadUrl);
+                            setDownloadProgress(0);
+                        },
+                    );
+                }
+                videoDownloader.downloadFromSource(selectedSource);
+            };
         }
     };
 
@@ -237,6 +264,20 @@ export function ControlPanel() {
                 <p>Downloading from CDN</p>
             </div>
             <div className="rezka-prime-toolbar-right">
+                <span>
+                    {isDownloading && (
+                        <div className="progress-bar-container">
+                            <div
+                                className="progress-bar"
+                                style={{width: `${downloadProgress}%`}}
+                            >
+                                {downloadProgress > 10
+                                    ? `${downloadProgress}%`
+                                    : ''}
+                            </div>
+                        </div>
+                    )}
+                </span>
                 <select
                     hidden={sources.length === 0}
                     onChange={handleQualitySelect}

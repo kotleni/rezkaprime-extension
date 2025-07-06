@@ -59,3 +59,27 @@
 @keyframes spin {
   to {transform:rotate(360deg);}
 }
+
+.progress-bar-container {
+  display: flex;
+  align-items: center;
+  width: 150px;
+  height: 24px;
+  background-color: #333;
+  border: 1px solid #555;
+  border-radius: 4px;
+  margin: 0 10px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  background-color: #4CAF50;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  transition: width 0.2s ease-in-out;
+  white-space: nowrap;
+}
