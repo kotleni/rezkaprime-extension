@@ -191,7 +191,7 @@ export function ControlPanel() {
 
     const handleQualitySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
-        const qualityName = value;
+        const qualityName = value.trim();
         console.log(value);
         const index = sources.findIndex(
             source => source.quality === qualityName,
@@ -244,9 +244,7 @@ export function ControlPanel() {
                     <option
                         selected={selectedSource === source}
                         key={source.quality}
-                    >
-                        {source.quality}
-                    </option>
+                    >{source.quality}</option>
                 ))}
             </select>
             <div
