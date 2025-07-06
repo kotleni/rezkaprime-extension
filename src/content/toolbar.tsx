@@ -241,7 +241,7 @@ export function ControlPanel() {
             </div>
             <div className="rezka-prime-toolbar-right">
                 <span>
-                    {downloadUrl && (<a href={downloadUrl} download>Save</a>)}
+                    {downloadUrl && (<a href={downloadUrl} download={downloadUrl.split('/').pop()+'.mp4'}>Save</a>)}
                     {isDownloading && (
                         <div className="progress-bar-container">
                             <div
