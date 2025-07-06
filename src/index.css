@@ -1,3 +1,7 @@
 .rezka-prime-toolbar {
-  background-color: #212121;
+  background: #e1e289;
+  width: 200%;
+  margin-left: 30px;
+  margin-right: 30px;
+  translate: 0 -8px;
 }
