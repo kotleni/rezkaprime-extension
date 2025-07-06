@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {DownloadIcon} from '../components/download-icon';
+import { LoadingIcon } from '../components/loading-icon';
 
 function buildFileName(
     name: string,
@@ -59,12 +60,12 @@ function clearTrash(data) {
     return final_string;
 }
 
-async function getFileSize(url: string) {
+async function getFileSize(url: string): Promise<number> {
     return new Promise(async resolve => {
         const controller = new AbortController();
         fetch(url, {signal: controller.signal})
             .then(resp => {
-                resolve(resp.headers.get('Content-Length'));
+                resolve(parseInt(resp.headers.get('Content-Length')!));
                 controller.abort();
             })
             .catch(_ => {
@@ -73,101 +74,190 @@ async function getFileSize(url: string) {
     });
 }
 
-class CDNPlayerWrapper {
-    async getCDNPlayerInfo() {
-        return CDNPlayerInfo;
-    }
+interface VideoSource {
+    url: string;
+    quality: string;
+}
 
-    get streams() {
-        return CDNPlayerInfo.streams;
+class CDNPlayerWrapper {
+    async fetchVideoSources(): Promise<VideoSource[]> {
+        const sources: VideoSource[] = [];
+        const arr = clearTrash(CDNPlayerInfo.streams).split(',');
+        for (const e of arr) {
+            const temp = e.split('[')[1].split(']');
+            const quality = temp[0];
+            const links = temp[1].split(' or ').filter(x => x.endsWith('.mp4'));
+            for (const link of links) {
+                const videoSource: VideoSource = {
+                        url: link,
+                        quality: quality,
+                    };
+                    sources.push(videoSource);
+                    break;
+            }
+        }
+        return sources;
     }
 }
 
-async function downloadBtnClicked() {
-    const cdnPlayer = new CDNPlayerWrapper();
-    const arr = clearTrash(cdnPlayer.streams).split(',');
-    for (const e of arr) {
-        const temp = e.split('[')[1].split(']');
-        const quality = temp[0];
-        const links = temp[1].split(' or ').filter(x => x.endsWith('.mp4'));
-        for (const link of links) {
-            const size = await getFileSize(link);
-            if (size) {
-                // size = formatBytes(size, 1);
-                // let element = makeLink(quality, link, size);
-                console.log(link);
-                break;
-            } else {
-                console.error({_: 'Error', name: quality, url: link});
-            }
+interface DownloadingState {}
+class IdleState implements DownloadingState {}
+class ParsingState implements DownloadingState {}
+class InProgressState implements DownloadingState {
+    constructor(public progress: number) {}
+}
+class FinishedState implements DownloadingState {
+    constructor(public file: Blob) {}
+}
+
+class VideoDownloader {
+    private state: DownloadingState = IdleState;
+
+    onStateChanged: (state: DownloadingState) => void = state => {};
+
+    downloadFromSource(videoSource: VideoSource) {
+        this.state = new ParsingState();
+        this.onStateChanged(this.state);
+
+        const xhr = new XMLHttpRequest();
+
+        const player = document.getElementById('player');
+        const href = player?.getElementsByTagName('video')[0].src;
+        const filename = href!.split('/').pop();
+
+        const title = 'handleDownload';
+        let season, episode, translation, name;
+
+        const el = document.querySelector('#simple-episodes-tabs .active');
+        if (el) {
+            season = el.getAttribute('data-season_id');
+            episode = el.getAttribute('data-episode_id');
         }
+        const el2 = document.querySelector('#translators-list .active');
+        if (el2) {
+            translation = el2.innerText;
+        }
+        name = document.querySelector(
+            '.b-content__main .b-post__title',
+        )!.innerText;
+
+        console.log(filename, season, episode, translation, name);
+
+        const targetFileName = buildFileName(
+            name,
+            season,
+            episode,
+            translation,
+            title,
+        );
+
+        this.state = new InProgressState(0);
+        this.onStateChanged(this.state);
+
+        xhr.open('GET', videoSource.url, true);
+        xhr.responseType = 'blob';
+        xhr.onprogress = prog => {
+            const percentComplete = Math.round(
+                (prog.loaded / prog.total) * 100,
+            );
+            console.log(`Downloading - ${percentComplete}%`);
+
+            this.state = new InProgressState(percentComplete);
+            this.onStateChanged(this.state);
+        };
+        xhr.onload = () => {
+            const file = new Blob([xhr.response], {
+                type: 'application/octet-stream',
+            });
+            this.state = new FinishedState(file);
+            this.onStateChanged(this.state);
+        };
+        xhr.send();
     }
-
-    const xhr = new XMLHttpRequest();
-
-    const player = document.getElementById('player');
-    const href = player?.getElementsByTagName('video')[0].src;
-    const filename = href!.split('/').pop();
-
-    const title = 'handleDownload';
-    let season, episode, translation, name;
-
-    const el = document.querySelector('#simple-episodes-tabs .active');
-    if (el) {
-        season = el.getAttribute('data-season_id');
-        episode = el.getAttribute('data-episode_id');
-    }
-    const el2 = document.querySelector('#translators-list .active');
-    if (el2) {
-        translation = el2.innerText;
-    }
-    name = document.querySelector('.b-content__main .b-post__title')!.innerText;
-
-    console.log(filename, season, episode, translation, name);
-
-    const targetFileName = buildFileName(
-        name,
-        season,
-        episode,
-        translation,
-        title,
-    );
-
-    xhr.open('GET', href!, true);
-    xhr.responseType = 'blob';
-    xhr.onprogress = prog => {
-        const percentComplete = Math.round((prog.loaded / prog.total) * 100);
-        console.log(`Downloading - ${percentComplete}%`);
-    };
-    xhr.onload = function () {
-        const file = new Blob([xhr.response], {
-            type: 'application/octet-stream',
-        });
-        const a_el = document.createElement('a');
-        a_el.href = window.URL.createObjectURL(file);
-        const extension = filename!.split('.').pop();
-        a_el.download = `${targetFileName}.${extension}`;
-        a_el.click();
-        setTimeout(() => {}, 1000);
-    };
-    xhr.send();
 }
 
 export function ControlPanel() {
-    const handleDownload = async () => {
-        downloadBtnClicked();
+    const [sources, setSources] = useState<VideoSource[]>([]);
+    const [selectedSource, setSelectedSource] = useState<VideoSource | null>();
+    const [videoDownloader, setVideoDownloader] = useState(new VideoDownloader());
+
+    const isSourcesLoaded = sources.length > 0;
+
+    const fetchSources = async () => {
+        const sources = await new CDNPlayerWrapper().fetchVideoSources();
+        setSources(sources);
+        setSelectedSource(sources[0]); // Select first by default
     };
+
+    const handleQualitySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const value = e.target.value;
+        const qualityName = value;
+        console.log(value);
+        const index = sources.findIndex(
+            source => source.quality === qualityName,
+        );
+        console.log(index);
+        setSelectedSource(sources[index]);
+        console.log(sources[index]);
+    };
+
+    const handleDownload = async () => {
+        if(!isSourcesLoaded) return;
+
+        if (selectedSource) {
+            videoDownloader.onStateChanged = state => { 
+                console.log(state);
+
+                if(state instanceof FinishedState) {
+                    const file = state.file;
+                    const downloadUrl = URL.createObjectURL(file);
+                    let downloading = browser.downloads.download({
+                        url: downloadUrl,
+                        filename: "video.mp4",
+                        conflictAction: "uniquify",
+                    });
+                }
+            };
+            videoDownloader.downloadFromSource(selectedSource);
+
+            const resultFile = window.URL.createObjectURL(file);
+            console.log(resultFile);
+        }
+    };
+
+    // FIXME:
+    setTimeout(fetchSources, 1000 * 1.5);
 
     return (
         <div className="rezka-prime-toolbar">
-            <h3 className="">Rezka Prime</h3>
-            <select className="rezka-select">
-                <option>480p</option>
-                <option>720p</option>
-                <option>1080p</option>
+            <div className='rezka-prime-toolbar-left'>
+                <h3 className="">Rezka Prime</h3>
+                <p>Downloading from CDN</p>
+            </div>
+            <div className='rezka-prime-toolbar-right'>
+                <select
+                hidden={sources.length === 0}
+                onChange={handleQualitySelect}
+                className="rezka-select"
+            >
+                {sources.map(source => (
+                    <option
+                        selected={selectedSource === source}
+                        key={source.quality}
+                    >
+                        {source.quality}
+                    </option>
+                ))}
             </select>
-            <div onClick={handleDownload} className="rezka-button">
-                <DownloadIcon />
+            <div
+                hidden={sources.length === 0}
+                onClick={handleDownload}
+                className="rezka-button"
+            >
+                {
+                    isSourcesLoaded ? <DownloadIcon /> : <LoadingIcon className='loading-icon'/>
+                }
+            </div>
             </div>
         </div>
     );

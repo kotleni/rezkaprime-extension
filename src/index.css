@@ -9,6 +9,20 @@
   translate: 0 -8px;
 
   display: flex;
+  justify-content: start;
+  gap: 8px;
+}
+
+.rezka-prime-toolbar-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  gap: 0px;
+  flex-grow: 1;
+}
+
+.rezka-prime-toolbar-right {
+  display: flex;
   justify-content: end;
   gap: 8px;
 }
@@ -30,4 +44,18 @@
 
 .rezka-select {
   border: none;
+}
+
+.loading-icon {
+  animation: spin 1000ms linear infinite;
+}
+
+@-moz-keyframes spin {
+  to { -moz-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+  to { -webkit-transform: rotate(360deg); }
+}
+@keyframes spin {
+  to {transform:rotate(360deg);}
 }
