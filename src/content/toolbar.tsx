@@ -226,7 +226,7 @@ export function ControlPanel() {
     };
 
     // FIXME:
-    setTimeout(fetchSources, 1000 * 1.5);
+    setTimeout(fetchSources, 1000 * 0.5);
 
     return (
         <div className="rezka-prime-toolbar">
