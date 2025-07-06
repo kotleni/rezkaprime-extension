@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import downloadIconContent from '../assets/download-icon.svg?raw';
+import { DownloadIcon } from '../components/download-icon';
 
 export function ControlPanel() {
     const handleDownload = () => {};
@@ -13,8 +13,7 @@ export function ControlPanel() {
                 <option>1080p</option>
             </select>
             <div onClick={handleDownload} className="rezka-button">
-                {/* {downloadIconContent} */}
-                <span>Download</span>
+                <DownloadIcon />
             </div>
         </div>
     );
