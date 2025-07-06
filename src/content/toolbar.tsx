@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {DownloadIcon} from '../components/download-icon';
 import {LoadingIcon} from '../components/loading-icon';
 
@@ -249,13 +249,14 @@ export function ControlPanel() {
                         },
                     );
                 }
-                videoDownloader.downloadFromSource(selectedSource);
             };
+            videoDownloader.downloadFromSource(selectedSource);
         }
     };
 
-    // FIXME:
-    setTimeout(fetchSources, 1000 * 0.5);
+    useEffect(() => {
+        fetchSources();
+    }, []);
 
     return (
         <div className="rezka-prime-toolbar">
@@ -279,19 +280,20 @@ export function ControlPanel() {
                     )}
                 </span>
                 <select
-                    hidden={sources.length === 0}
-                    onChange={handleQualitySelect}
-                    className="rezka-select"
-                >
-                    {sources.map(source => (
-                        <option
-                            selected={selectedSource === source}
-                            key={source.quality}
-                        >
-                            {source.quality}
-                        </option>
-                    ))}
-                </select>
+    hidden={sources.length === 0}
+    onChange={handleQualitySelect}
+    className="rezka-select"
+    value={selectedSource?.quality || ''}
+>
+    {sources.map(source => (
+        <option
+            key={source.quality}
+            value={source.quality}
+        >
+            {source.quality}
+        </option>
+    ))}
+</select>
                 <div
                     hidden={sources.length === 0}
                     onClick={handleDownload}
