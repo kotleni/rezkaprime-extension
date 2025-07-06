@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {DownloadIcon} from '../components/download-icon';
-import { LoadingIcon } from '../components/loading-icon';
+import {LoadingIcon} from '../components/loading-icon';
 
 function buildFileName(
     name: string,
@@ -89,11 +89,11 @@ class CDNPlayerWrapper {
             const links = temp[1].split(' or ').filter(x => x.endsWith('.mp4'));
             for (const link of links) {
                 const videoSource: VideoSource = {
-                        url: link,
-                        quality: quality,
-                    };
-                    sources.push(videoSource);
-                    break;
+                    url: link,
+                    quality: quality,
+                };
+                sources.push(videoSource);
+                break;
             }
         }
         return sources;
@@ -179,7 +179,9 @@ class VideoDownloader {
 export function ControlPanel() {
     const [sources, setSources] = useState<VideoSource[]>([]);
     const [selectedSource, setSelectedSource] = useState<VideoSource | null>();
-    const [videoDownloader, setVideoDownloader] = useState(new VideoDownloader());
+    const [videoDownloader, setVideoDownloader] = useState(
+        new VideoDownloader(),
+    );
 
     const isSourcesLoaded = sources.length > 0;
 
@@ -202,19 +204,19 @@ export function ControlPanel() {
     };
 
     const handleDownload = async () => {
-        if(!isSourcesLoaded) return;
+        if (!isSourcesLoaded) return;
 
         if (selectedSource) {
-            videoDownloader.onStateChanged = state => { 
+            videoDownloader.onStateChanged = state => {
                 console.log(state);
 
-                if(state instanceof FinishedState) {
+                if (state instanceof FinishedState) {
                     const file = state.file;
                     const downloadUrl = URL.createObjectURL(file);
-                    let downloading = browser.downloads.download({
+                    const downloading = browser.downloads.download({
                         url: downloadUrl,
-                        filename: "video.mp4",
-                        conflictAction: "uniquify",
+                        filename: 'video.mp4',
+                        conflictAction: 'uniquify',
                     });
                 }
             };
@@ -230,32 +232,36 @@ export function ControlPanel() {
 
     return (
         <div className="rezka-prime-toolbar">
-            <div className='rezka-prime-toolbar-left'>
+            <div className="rezka-prime-toolbar-left">
                 <h3 className="">Rezka Prime</h3>
                 <p>Downloading from CDN</p>
             </div>
-            <div className='rezka-prime-toolbar-right'>
+            <div className="rezka-prime-toolbar-right">
                 <select
-                hidden={sources.length === 0}
-                onChange={handleQualitySelect}
-                className="rezka-select"
-            >
-                {sources.map(source => (
-                    <option
-                        selected={selectedSource === source}
-                        key={source.quality}
-                    >{source.quality}</option>
-                ))}
-            </select>
-            <div
-                hidden={sources.length === 0}
-                onClick={handleDownload}
-                className="rezka-button"
-            >
-                {
-                    isSourcesLoaded ? <DownloadIcon /> : <LoadingIcon className='loading-icon'/>
-                }
-            </div>
+                    hidden={sources.length === 0}
+                    onChange={handleQualitySelect}
+                    className="rezka-select"
+                >
+                    {sources.map(source => (
+                        <option
+                            selected={selectedSource === source}
+                            key={source.quality}
+                        >
+                            {source.quality}
+                        </option>
+                    ))}
+                </select>
+                <div
+                    hidden={sources.length === 0}
+                    onClick={handleDownload}
+                    className="rezka-button"
+                >
+                    {isSourcesLoaded ? (
+                        <DownloadIcon />
+                    ) : (
+                        <LoadingIcon className="loading-icon" />
+                    )}
+                </div>
             </div>
         </div>
     );
