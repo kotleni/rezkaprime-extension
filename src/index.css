@@ -2,14 +2,11 @@
   background: #e1e289;
   color: black;
 
-  width: calc(200% - 15px);
-  margin-left: 30px;
-  margin-right: 30px;
   padding: 8px;
   translate: 0 -8px;
 
   display: flex;
-  justify-content: start;
+  justify-content: space-between;
   gap: 8px;
 }
 
@@ -18,7 +15,6 @@
   flex-direction: column;
   justify-content: start;
   gap: 0px;
-  flex-grow: 1;
 }
 
 .rezka-prime-toolbar-right {
