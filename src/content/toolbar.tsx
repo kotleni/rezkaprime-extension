@@ -1,16 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, {use, useEffect, useState} from 'react';
 import {DownloadIcon} from '../components/download-icon';
 import {LoadingIcon} from '../components/loading-icon';
-
-function buildFileName(
-    name: string,
-    season: string,
-    episode: string,
-    translation: string,
-    res: string,
-) {
-    return `${name}-${season}-${episode}-${translation}-${res}`;
-}
 
 function clearTrash(data) {
     function product(iterables, repeat) {
@@ -72,6 +62,49 @@ async function getFileSize(url: string): Promise<number> {
                 resolve(0);
             });
     });
+}
+
+
+function buildFileName(qualityName: string): string {
+    // Get original title
+    const originalTitleElement = document.getElementsByClassName('b-post__origtitle');
+    const originalTitle = originalTitleElement.length > 0 ? originalTitleElement[0].innerText : 'unknown';
+
+    // Get current voice over name
+    let currentVoiceOverName = 'unknown';
+    const voiceOverElements = document.getElementsByClassName("b-translator__item");
+    for(let i = 0; i < voiceOverElements.length; i++) {
+        const element = voiceOverElements[i];
+        if(element.className.endsWith('active')) {
+            currentVoiceOverName = element.innerText;
+            break;
+        }
+    }
+
+    // Get selected season
+    let selectedSeason = -1;
+    const seasonsElements = document.getElementsByClassName("b-simple_season__item");
+    for(let i = 0; i < seasonsElements.length; i++) {
+        const element = seasonsElements[i];
+        if(element.className.endsWith('active')) {
+            selectedSeason = parseInt(element.getAttribute('data-tab_id')!);
+            break;
+        }
+    }
+
+    // Get selected episode
+    let selectedEpisode = -1;
+    const episodesElements = document.getElementsByClassName("b-simple_episode__item");
+    for(let i = 0; i < episodesElements.length; i++) {
+        const element = episodesElements[i];
+        if(element.className.endsWith('active')) {
+            selectedEpisode = parseInt(element.getAttribute('data-episode_id')!);
+            break;
+        }
+    }
+
+    return `${originalTitle}-${qualityName}-s${selectedSeason}-ep${selectedEpisode}-${currentVoiceOverName}(RezkaPrime)`
+        .replaceAll(' ', '_');
 }
 
 interface VideoSource {
@@ -184,6 +217,7 @@ export function ControlPanel() {
     );
     const [downloadProgress, setDownloadProgress] = useState<number>(0);
     const [downloadUrl, setDownloadingUrl] =  useState<string>('');
+    const [fileName, setFileName] = useState<string>('');
 
     const isSourcesLoaded = sources.length > 0;
     const isDownloading = downloadProgress > 0;
@@ -204,6 +238,10 @@ export function ControlPanel() {
         console.log(index);
         setSelectedSource(sources[index]);
         console.log(sources[index]);
+
+        const newFileName = buildFileName(qualityName);
+        console.log('File name: ' + newFileName);
+        setFileName(newFileName);
     };
 
     const handleDownload = async () => {
@@ -241,7 +279,7 @@ export function ControlPanel() {
             </div>
             <div className="rezka-prime-toolbar-right">
                 <span>
-                    {downloadUrl && (<a href={downloadUrl} download={downloadUrl.split('/').pop()+'.mp4'}>Save</a>)}
+                    {downloadUrl && (<a href={downloadUrl} download={fileName+'.mp4'}>Save</a>)}
                     {isDownloading && (
                         <div className="progress-bar-container">
                             <div
