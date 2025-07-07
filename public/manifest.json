@@ -28,13 +28,14 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
       "css": ["assets/styles.css"],
-      "world" : "MAIN"
-    },
-    {
-      "matches": ["<all_urls>"],
       "js": ["bridge.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["content.js"],
+      "matches": ["<all_urls>"]
     }
   ]
 }
