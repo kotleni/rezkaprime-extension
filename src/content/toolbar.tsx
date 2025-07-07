@@ -250,6 +250,19 @@ export function ControlPanel() {
         setClosedCaptions(closedCaptions);
     };
 
+    const requestFileDownload = (url: string, fileName: string) => {
+        window.postMessage(
+            {
+                type: 'DOWNLOAD_FILE',
+                payload: {
+                    url: url,
+                    fileName: fileName,
+                },
+            },
+            window.location.origin,
+        );
+    };
+
     useEffect(() => {
         fetchSources();
     }, []);
@@ -263,27 +276,35 @@ export function ControlPanel() {
             <div className="rezka-prime-toolbar-right">
                 <div className="rezka-prime-toolbar-right-separate">
                     {sources.map(source => (
-                        <a
-                            href={source.url}
-                            download={buildFileName(source.quality) + '.mp4'}
+                        <div
+                            onClick={() =>
+                                void requestFileDownload(
+                                    source.url,
+                                    buildFileName(source.quality) + '.mp4',
+                                )
+                            }
                         >
                             <div className="rezka-button">
                                 {source.quality}
                                 <DownloadIcon className="rezka-button-icon" />
                             </div>
-                        </a>
+                        </div>
                     ))}
 
                     {closedCaptions.map(cc => (
-                        <a
-                            href={cc.url}
-                            download={buildFileName(cc.language) + '.vtt'}
+                        <div
+                            onClick={() =>
+                                void requestFileDownload(
+                                    cc.url,
+                                    buildFileName(cc.language) + '.vtt',
+                                )
+                            }
                         >
                             <div className="rezka-button">
                                 CC {cc.language}
-                                    <DownloadIcon className="rezka-button-icon" />
+                                <DownloadIcon className="rezka-button-icon" />
                             </div>
-                        </a>
+                        </div>
                     ))}
                 </div>
             </div>

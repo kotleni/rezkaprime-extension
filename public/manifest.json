@@ -10,7 +10,8 @@
     "activeTab",
     "storage",
     "tabs",
-    "scripting"
+    "scripting",
+    "downloads"
   ],
   "action": {
     "default_icon": "icon48.png",
@@ -27,6 +28,10 @@
       "js": ["content.js"],
       "css": ["assets/styles.css"],
       "world" : "MAIN"
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["bridge.js"]
     }
   ]
 }
