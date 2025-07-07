@@ -5,6 +5,8 @@ RezkaPrime is a browser extension created for adding custom features like downlo
 [[Download]](https://github.com/kotleni/rezkaprime-extension/releases)
 [[Report bug]](https://github.com/kotleni/rezkaprime-extension/issues)
 
+<img width=400 src="https://github.com/kotleni/rezkaprime-extension/blob/dev/public/preview1.png?raw=true">
+
 ## Features
 
 - Download video files in any quality.
