@@ -1,3 +1,5 @@
+<img width=80 src="https://github.com/kotleni/rezkaprime-extension/blob/dev/public/icon48.png?raw=true" align=right>
+
 # RezkaPrime Extension
 RezkaPrime is a browser extension created for adding custom features like downloading video files and subtitles from HDrezka and its mirrors. It's works very fast (not like other extensions).<br>
 [[Download]](https://github.com/kotleni/rezkaprime-extension/releases)
