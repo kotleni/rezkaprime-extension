@@ -45,12 +45,11 @@ RezkaPrime is a browser extension created for adding custom features like downlo
 3. Click the gear icon (⚙️) and select "Install Add-on From File...".
 4. Select the downloaded `.xpi` file.
 
-## Building by youself on Linux
+## Building by youself
 1. Clone this repository `$ git clone https://github.com/kotleni/rezkaprime-extension`
 2. Install pnpm globally `# npm i -g pnpm`
 3. Install dependencies `$ pnpm i`
-4. Build the extension `$ pnpm run build`
-5. Pack the extension `$ pnpm run pack`
+5. Build & pack the extension `$ pnpm run pack:firefox` (for firefox) and `$ pnpm run pack:chrome` (for chrome)
 
 Now you can see `dist` folder with unpacked extension and `builds` folder with unsigned packed extensions.
 
