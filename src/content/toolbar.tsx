@@ -231,13 +231,10 @@ export function ControlPanel() {
     const handleQualitySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
         const qualityName = value.trim();
-        console.log(value);
         const index = sources.findIndex(
             source => source.quality === qualityName,
         );
-        console.log(index);
         setSelectedSource(sources[index]);
-        console.log(sources[index]);
 
         const newFileName = buildFileName(qualityName);
         console.log('File name: ' + newFileName);
