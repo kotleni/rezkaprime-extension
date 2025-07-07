@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Rezka Prime",
   "version": "1.0.0b1",
-  "description": "Jet another HDRezka extension.",
+  "description": "A browser extension created for adding custom features like downloading video files and subtitles from HDrezka and its mirrors.",
   "icons": {
     "48": "icon48.png"
   },
