@@ -222,11 +222,26 @@ export function ControlPanel() {
     const isSourcesLoaded = sources.length > 0;
     const isDownloading = downloadProgress > 0;
 
+    const selectSource = (index: number) => {
+        setSelectedSource(sources[index]);
+        const newFileName = buildFileName(sources[index].quality);
+        console.log('File name: ' + newFileName);
+        setFileName(newFileName);
+    };
+
     const fetchSources = async () => {
         const sources = await new CDNPlayerWrapper().fetchVideoSources();
         setSources(sources);
-        setSelectedSource(sources[0]); // Select first by default
     };
+
+    // Catch sources reload
+    useEffect(() => {
+        // Ignore if no any sources
+        if(sources.length === 0) return;
+
+        // Select first source by default
+        selectSource(0);
+    }, [sources]);
 
     const handleQualitySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
@@ -234,12 +249,8 @@ export function ControlPanel() {
         const index = sources.findIndex(
             source => source.quality === qualityName,
         );
-        setSelectedSource(sources[index]);
-
-        const newFileName = buildFileName(qualityName);
-        console.log('File name: ' + newFileName);
-        setFileName(newFileName);
-    };
+        selectSource(index);
+    }
 
     const handleDownload = async () => {
         if (!isSourcesLoaded) return;
