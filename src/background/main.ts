@@ -1,6 +1,6 @@
-browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+(chrome || browser).runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (msg.type === 'DOWNLOAD_FILE') {
-        const downloading = browser.downloads.download({
+        const downloading = (chrome || browser).downloads.download({
             url: msg.payload.url,
             filename: msg.payload.fileName,
             conflictAction: 'uniquify',

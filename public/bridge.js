@@ -13,5 +13,5 @@ injectScript('content.js');
 
 /* pass events between page and background */
 window.addEventListener("message", (event) => {
-  browser.runtime.sendMessage(event.data);
+  (chrome || browser).runtime.sendMessage(event.data);
 });
