@@ -265,13 +265,11 @@ export function ControlPanel() {
                     {sources.map(source => (
                         <a
                             href={source.url}
-                            download={buildFileName(source.quality)+'.mp4'}
+                            download={buildFileName(source.quality) + '.mp4'}
                         >
                             <div className="rezka-button">
-                                <span className="rezka-button-wtext">
-                                    {source.quality}
-                                    <DownloadIcon className="rezka-button-icon" />
-                                </span>
+                                {source.quality}
+                                <DownloadIcon className="rezka-button-icon" />
                             </div>
                         </a>
                     ))}
@@ -282,10 +280,8 @@ export function ControlPanel() {
                             download={buildFileName(cc.language) + '.vtt'}
                         >
                             <div className="rezka-button">
-                                <span className="rezka-button-wtext">
-                                    CC {cc.language}
+                                CC {cc.language}
                                     <DownloadIcon className="rezka-button-icon" />
-                                </span>
                             </div>
                         </a>
                     ))}

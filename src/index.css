@@ -36,16 +36,9 @@
   padding: 6px;
   cursor: pointer;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-}
-
-.rezka-button-wtext {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 6px;
-  font-size: small;
 }
 
 .rezka-button:hover {
