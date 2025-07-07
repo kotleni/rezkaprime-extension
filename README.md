@@ -25,7 +25,7 @@ RezkaPrime is a browser extension created for adding custom features like downlo
 ❌ - Not supported<br>
 ✅ - Supported<br>
 
-\*1 Chrome support is currently broken.
+\*1 Chrome support is currently broken.<br>
 \*2 Firefox Mobile support is currently broken.
 
 ## Installation
