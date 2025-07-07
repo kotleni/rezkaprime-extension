@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Rezka Prime",
-  "version": "1.0.0",
+  "version": "1.0.0b1",
   "description": "Jet another HDRezka extension.",
   "icons": {
     "48": "icon48.png"
