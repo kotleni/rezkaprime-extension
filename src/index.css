@@ -29,16 +29,8 @@
   gap: 2px;
 }
 
-.rezka-prime-toolbar-right-select-container {
-  width: auto;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 6px;
-}
-
 .rezka-button {
-  width: 90px;
+  width: 100px;
   background-color: #2d2d2d;
   color: white;
   padding: 6px;
@@ -77,26 +69,4 @@
 }
 @keyframes spin {
   to {transform:rotate(360deg);}
-}
-
-.progress-bar-container {
-  display: flex;
-  align-items: center;
-  width: 150px;
-  height: 100%;
-  background-color: #333;
-  border: 1px solid #555;
-  overflow: hidden;
-}
-.progress-bar {
-  height: 100%;
-  background-color: #4CAF50;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: bold;
-  transition: width 0.2s ease-in-out;
-  white-space: nowrap;
 }

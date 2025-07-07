@@ -239,24 +239,8 @@ class VideoDownloader {
 export function ControlPanel() {
     const [sources, setSources] = useState<VideoSource[]>([]);
     const [closedCaptions, setClosedCaptions] = useState<SubtitlesSource[]>([]);
-    const [selectedSource, setSelectedSource] = useState<VideoSource | null>();
-    const [selectedCC, setSelectedCC] = useState<SubtitlesSource | null>();
-    const [videoDownloader, setVideoDownloader] = useState(
-        new VideoDownloader(),
-    );
-    const [downloadProgress, setDownloadProgress] = useState<number>(0);
-    const [downloadUrl, setDownloadingUrl] = useState<string>('');
-    const [fileName, setFileName] = useState<string>('');
 
     const isSourcesLoaded = sources.length > 0;
-    const isDownloading = downloadProgress > 0;
-
-    const selectSource = (index: number) => {
-        setSelectedSource(sources[index]);
-        const newFileName = buildFileName(sources[index].quality);
-        console.log('File name: ' + newFileName);
-        setFileName(newFileName);
-    };
 
     const fetchSources = async () => {
         const cdnPlayer = await new CDNPlayerWrapper();
@@ -264,62 +248,6 @@ export function ControlPanel() {
         const closedCaptions = await cdnPlayer.fetchVideoClosedCaptions();
         setSources(sources);
         setClosedCaptions(closedCaptions);
-        setSelectedCC(closedCaptions[0]); // Select by default
-    };
-
-    // Catch sources reload
-    useEffect(() => {
-        // Ignore if no any sources
-        if (sources.length === 0) return;
-
-        // Select first source by default
-        selectSource(0);
-    }, [sources]);
-
-    const handleCCSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value;
-        const ccName = value.trim();
-        const index = closedCaptions.findIndex(cc => cc.language === ccName);
-        setSelectedCC(closedCaptions[index]);
-    };
-
-    const handleQualitySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value;
-        const qualityName = value.trim();
-        const index = sources.findIndex(
-            source => source.quality === qualityName,
-        );
-        selectSource(index);
-    };
-
-    const handleDownloadCC = async () => {
-        if(!isSourcesLoaded) return;
-        if(!selectedCC) return;
-
-        console.log(selectedCC?.url);
-    };
-
-    const handleDownload = async () => {
-        if (!isSourcesLoaded) return;
-
-        if (selectedSource) {
-            videoDownloader.onStateChanged = state => {
-                console.log(state);
-
-                if (state instanceof InProgressState) {
-                    const progress = state.progress;
-                    setDownloadProgress(progress);
-                } else if (state instanceof FinishedState) {
-                    const file = state.file;
-                    setDownloadingUrl(URL.createObjectURL(file));
-
-                    // TODO:
-                    // URL.revokeObjectURL(downloadUrl);
-                    setDownloadProgress(0);
-                }
-            };
-            videoDownloader.downloadFromSource(selectedSource);
-        }
     };
 
     useEffect(() => {
@@ -333,89 +261,34 @@ export function ControlPanel() {
                 <p>Downloading from CDN</p>
             </div>
             <div className="rezka-prime-toolbar-right">
-                <span>
-                    {downloadUrl && (
-                        <a href={downloadUrl} download={fileName + '.mp4'}>
-                            Save
-                        </a>
-                    )}
-                    {isDownloading && (
-                        <div className="progress-bar-container">
-                            <div
-                                className="progress-bar"
-                                style={{width: `${downloadProgress}%`}}
-                            >
-                                {downloadProgress > 10
-                                    ? `${downloadProgress}%`
-                                    : ''}
-                            </div>
-                        </div>
-                    )}
-                </span>
                 <div className="rezka-prime-toolbar-right-separate">
-                    <span className="rezka-prime-toolbar-right-select-container">
-                        Quality
-                        <select
-                            hidden={sources.length === 0}
-                            onChange={handleQualitySelect}
-                            className="rezka-select"
-                            value={selectedSource?.quality || ''}
+                    {sources.map(source => (
+                        <a
+                            href={source.url}
+                            download={buildFileName(source.quality)+'.mp4'}
                         >
-                            {sources.map(source => (
-                                <option
-                                    key={source.quality}
-                                    value={source.quality}
-                                >
+                            <div className="rezka-button">
+                                <span className="rezka-button-wtext">
                                     {source.quality}
-                                </option>
-                            ))}
-                        </select>
-                    </span>
-                    <span className="rezka-prime-toolbar-right-select-container">
-                        CC Language
-                        <select
-                            hidden={closedCaptions.length === 0}
-                            onChange={handleCCSelect}
-                            className="rezka-select"
-                            value={selectedCC?.language || ''}
+                                    <DownloadIcon className="rezka-button-icon" />
+                                </span>
+                            </div>
+                        </a>
+                    ))}
+
+                    {closedCaptions.map(cc => (
+                        <a
+                            href={cc.url}
+                            download={buildFileName(cc.language) + '.vtt'}
                         >
-                            {closedCaptions.map(cc => (
-                                <option key={cc.language} value={cc.language}>
-                                    {cc.language}
-                                </option>
-                            ))}
-                        </select>
-                    </span>
-                </div>
-                <div className="rezka-prime-toolbar-right-separate">
-                    <div
-                        hidden={sources.length === 0}
-                        onClick={handleDownload}
-                        className="rezka-button"
-                    >
-                        {isSourcesLoaded ? (
-                            <span className="rezka-button-wtext">
-                                Video
-                                <DownloadIcon className="rezka-button-icon" />
-                            </span>
-                        ) : (
-                            <LoadingIcon className="loading-icon rezka-button-icon" />
-                        )}
-                    </div>
-                    <div
-                        hidden={closedCaptions.length === 0}
-                        onClick={handleDownloadCC}
-                        className="rezka-button"
-                    >
-                        {isSourcesLoaded ? (
-                            <span className="rezka-button-wtext">
-                                Subtitles
-                                <DownloadIcon className="rezka-button-icon" />
-                            </span>
-                        ) : (
-                            <LoadingIcon className="loading-icon rezka-button-icon" />
-                        )}
-                    </div>
+                            <div className="rezka-button">
+                                <span className="rezka-button-wtext">
+                                    CC {cc.language}
+                                    <DownloadIcon className="rezka-button-icon" />
+                                </span>
+                            </div>
+                        </a>
+                    ))}
                 </div>
             </div>
         </div>
