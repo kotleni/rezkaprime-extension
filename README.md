@@ -18,15 +18,14 @@ RezkaPrime is a browser extension created for adding custom features like downlo
 
 | Feature / Browser | Chrome | Firefox | Firefox Mobile |
 | :---------------- | :----: | :-----: | :--: |
-| Video Download    |   ❌*1 |   ✅    | ❌*2 |
-| Subtitle Download |   ❌*1 |   ✅    | ❌*2 |
+| Video Download    |   ✅ |   ✅    | ❌*1 |
+| Subtitle Download |   ✅ |   ✅    | ❌*1 |
 
 ❔ - Not tested<br>
 ❌ - Not supported<br>
 ✅ - Supported<br>
 
-\*1 Chrome support is currently broken.<br>
-\*2 Firefox Mobile support is currently broken.
+\*1 Firefox Mobile support is currently broken.
 
 ## Installation
 
