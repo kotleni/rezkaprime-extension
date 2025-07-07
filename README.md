@@ -41,6 +41,15 @@ RezkaPrime is a browser extension created for adding custom features like downlo
 3. Click the gear icon (⚙️) and select "Install Add-on From File...".
 4. Select the downloaded `.xpi` file.
 
+## Building by youself on Linux
+1. Clone this repository `$ git clone https://github.com/kotleni/rezkaprime-extension`
+2. Install pnpm globally `# npm i -g pnpm`
+3. Install dependencies `$ pnpm i`
+4. Build the extension `$ pnpm run build`
+5. Pack the extension `$ pnpm run pack`
+
+Now you can see `dist` folder with unpacked extension and `builds` folder with unsigned packed extensions.
+
 ## Usage
 
 Once installed, navigate to any video page on HDrezka or its mirrors. You will find new download options integrated under the video player. Simply click the desired download button for video or subtitles.
