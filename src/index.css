@@ -23,15 +23,37 @@
   gap: 8px;
 }
 
+.rezka-prime-toolbar-right-separate {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rezka-prime-toolbar-right-select-container {
+  width: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 6px;
+}
+
 .rezka-button {
-  width: fit-content;
+  width: 90px;
   background-color: #2d2d2d;
   color: white;
-  padding: 4px;
+  padding: 6px;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.rezka-button-wtext {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: small;
 }
 
 .rezka-button:hover {
@@ -40,6 +62,7 @@
 
 .rezka-select {
   border: none;
+  width: 120px;
 }
 
 .loading-icon {

@@ -64,18 +64,22 @@ async function getFileSize(url: string): Promise<number> {
     });
 }
 
-
 function buildFileName(qualityName: string): string {
     // Get original title
-    const originalTitleElement = document.getElementsByClassName('b-post__origtitle');
-    const originalTitle = originalTitleElement.length > 0 ? originalTitleElement[0].innerText : 'unknown';
+    const originalTitleElement =
+        document.getElementsByClassName('b-post__origtitle');
+    const originalTitle =
+        originalTitleElement.length > 0
+            ? originalTitleElement[0].innerText
+            : 'unknown';
 
     // Get current voice over name
     let currentVoiceOverName = 'unknown';
-    const voiceOverElements = document.getElementsByClassName("b-translator__item");
-    for(let i = 0; i < voiceOverElements.length; i++) {
+    const voiceOverElements =
+        document.getElementsByClassName('b-translator__item');
+    for (let i = 0; i < voiceOverElements.length; i++) {
         const element = voiceOverElements[i];
-        if(element.className.endsWith('active')) {
+        if (element.className.endsWith('active')) {
             currentVoiceOverName = element.innerText;
             break;
         }
@@ -83,10 +87,12 @@ function buildFileName(qualityName: string): string {
 
     // Get selected season
     let selectedSeason = -1;
-    const seasonsElements = document.getElementsByClassName("b-simple_season__item");
-    for(let i = 0; i < seasonsElements.length; i++) {
+    const seasonsElements = document.getElementsByClassName(
+        'b-simple_season__item',
+    );
+    for (let i = 0; i < seasonsElements.length; i++) {
         const element = seasonsElements[i];
-        if(element.className.endsWith('active')) {
+        if (element.className.endsWith('active')) {
             selectedSeason = parseInt(element.getAttribute('data-tab_id')!);
             break;
         }
@@ -94,22 +100,33 @@ function buildFileName(qualityName: string): string {
 
     // Get selected episode
     let selectedEpisode = -1;
-    const episodesElements = document.getElementsByClassName("b-simple_episode__item");
-    for(let i = 0; i < episodesElements.length; i++) {
+    const episodesElements = document.getElementsByClassName(
+        'b-simple_episode__item',
+    );
+    for (let i = 0; i < episodesElements.length; i++) {
         const element = episodesElements[i];
-        if(element.className.endsWith('active')) {
-            selectedEpisode = parseInt(element.getAttribute('data-episode_id')!);
+        if (element.className.endsWith('active')) {
+            selectedEpisode = parseInt(
+                element.getAttribute('data-episode_id')!,
+            );
             break;
         }
     }
 
-    return `${originalTitle}-${qualityName}-s${selectedSeason}-ep${selectedEpisode}-${currentVoiceOverName}(RezkaPrime)`
-        .replaceAll(' ', '_');
+    return `${originalTitle}-${qualityName}-s${selectedSeason}-ep${selectedEpisode}-${currentVoiceOverName}(RezkaPrime)`.replaceAll(
+        ' ',
+        '_',
+    );
 }
 
 interface VideoSource {
     url: string;
     quality: string;
+}
+
+interface SubtitlesSource {
+    url: string;
+    language: string;
 }
 
 class CDNPlayerWrapper {
@@ -130,6 +147,16 @@ class CDNPlayerWrapper {
             }
         }
         return sources;
+    }
+
+    async fetchVideoClosedCaptions(): Promise<SubtitlesSource[]> {
+        const subtitlesLines = CDNPlayerInfo.subtitle.split(',');
+        return subtitlesLines.map((line: string) => {
+            const parts = line.split(']');
+            const url = parts[1];
+            const language = parts[0].replace('[', '');
+            return {language: language, url: url};
+        });
     }
 }
 
@@ -211,12 +238,14 @@ class VideoDownloader {
 
 export function ControlPanel() {
     const [sources, setSources] = useState<VideoSource[]>([]);
+    const [closedCaptions, setClosedCaptions] = useState<SubtitlesSource[]>([]);
     const [selectedSource, setSelectedSource] = useState<VideoSource | null>();
+    const [selectedCC, setSelectedCC] = useState<SubtitlesSource | null>();
     const [videoDownloader, setVideoDownloader] = useState(
         new VideoDownloader(),
     );
     const [downloadProgress, setDownloadProgress] = useState<number>(0);
-    const [downloadUrl, setDownloadingUrl] =  useState<string>('');
+    const [downloadUrl, setDownloadingUrl] = useState<string>('');
     const [fileName, setFileName] = useState<string>('');
 
     const isSourcesLoaded = sources.length > 0;
@@ -230,18 +259,29 @@ export function ControlPanel() {
     };
 
     const fetchSources = async () => {
-        const sources = await new CDNPlayerWrapper().fetchVideoSources();
+        const cdnPlayer = await new CDNPlayerWrapper();
+        const sources = await cdnPlayer.fetchVideoSources();
+        const closedCaptions = await cdnPlayer.fetchVideoClosedCaptions();
         setSources(sources);
+        setClosedCaptions(closedCaptions);
+        setSelectedCC(closedCaptions[0]); // Select by default
     };
 
     // Catch sources reload
     useEffect(() => {
         // Ignore if no any sources
-        if(sources.length === 0) return;
+        if (sources.length === 0) return;
 
         // Select first source by default
         selectSource(0);
     }, [sources]);
+
+    const handleCCSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const value = e.target.value;
+        const ccName = value.trim();
+        const index = closedCaptions.findIndex(cc => cc.language === ccName);
+        setSelectedCC(closedCaptions[index]);
+    };
 
     const handleQualitySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
@@ -250,7 +290,14 @@ export function ControlPanel() {
             source => source.quality === qualityName,
         );
         selectSource(index);
-    }
+    };
+
+    const handleDownloadCC = async () => {
+        if(!isSourcesLoaded) return;
+        if(!selectedCC) return;
+
+        console.log(selectedCC?.url);
+    };
 
     const handleDownload = async () => {
         if (!isSourcesLoaded) return;
@@ -287,7 +334,11 @@ export function ControlPanel() {
             </div>
             <div className="rezka-prime-toolbar-right">
                 <span>
-                    {downloadUrl && (<a href={downloadUrl} download={fileName+'.mp4'}>Save</a>)}
+                    {downloadUrl && (
+                        <a href={downloadUrl} download={fileName + '.mp4'}>
+                            Save
+                        </a>
+                    )}
                     {isDownloading && (
                         <div className="progress-bar-container">
                             <div
@@ -301,31 +352,70 @@ export function ControlPanel() {
                         </div>
                     )}
                 </span>
-                <select
-    hidden={sources.length === 0}
-    onChange={handleQualitySelect}
-    className="rezka-select"
-    value={selectedSource?.quality || ''}
->
-    {sources.map(source => (
-        <option
-            key={source.quality}
-            value={source.quality}
-        >
-            {source.quality}
-        </option>
-    ))}
-</select>
-                <div
-                    hidden={sources.length === 0}
-                    onClick={handleDownload}
-                    className="rezka-button"
-                >
-                    {isSourcesLoaded ? (
-                        <DownloadIcon />
-                    ) : (
-                        <LoadingIcon className="loading-icon" />
-                    )}
+                <div className="rezka-prime-toolbar-right-separate">
+                    <span className="rezka-prime-toolbar-right-select-container">
+                        Quality
+                        <select
+                            hidden={sources.length === 0}
+                            onChange={handleQualitySelect}
+                            className="rezka-select"
+                            value={selectedSource?.quality || ''}
+                        >
+                            {sources.map(source => (
+                                <option
+                                    key={source.quality}
+                                    value={source.quality}
+                                >
+                                    {source.quality}
+                                </option>
+                            ))}
+                        </select>
+                    </span>
+                    <span className="rezka-prime-toolbar-right-select-container">
+                        CC Language
+                        <select
+                            hidden={closedCaptions.length === 0}
+                            onChange={handleCCSelect}
+                            className="rezka-select"
+                            value={selectedCC?.language || ''}
+                        >
+                            {closedCaptions.map(cc => (
+                                <option key={cc.language} value={cc.language}>
+                                    {cc.language}
+                                </option>
+                            ))}
+                        </select>
+                    </span>
+                </div>
+                <div className="rezka-prime-toolbar-right-separate">
+                    <div
+                        hidden={sources.length === 0}
+                        onClick={handleDownload}
+                        className="rezka-button"
+                    >
+                        {isSourcesLoaded ? (
+                            <span className="rezka-button-wtext">
+                                Video
+                                <DownloadIcon className="rezka-button-icon" />
+                            </span>
+                        ) : (
+                            <LoadingIcon className="loading-icon rezka-button-icon" />
+                        )}
+                    </div>
+                    <div
+                        hidden={closedCaptions.length === 0}
+                        onClick={handleDownloadCC}
+                        className="rezka-button"
+                    >
+                        {isSourcesLoaded ? (
+                            <span className="rezka-button-wtext">
+                                Subtitles
+                                <DownloadIcon className="rezka-button-icon" />
+                            </span>
+                        ) : (
+                            <LoadingIcon className="loading-icon rezka-button-icon" />
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

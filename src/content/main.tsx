@@ -2,7 +2,7 @@ import '../index.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import {ControlPanel} from './toolbar';
-import { doc } from 'prettier';
+import {doc} from 'prettier';
 
 // TODO: Make similar btn in toolbar
 
