@@ -24,8 +24,9 @@
 }
 
 .rezka-prime-toolbar-right-separate {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: auto;
   gap: 2px;
 }
 
