@@ -7,7 +7,7 @@ const createBaseManifest = (): Manifest => {
         manifest_version: 3,
         name: 'Rezka Prime',
         // version: pkg.version,
-        version: '0.1.0',
+        version: '0.1.1',
         description:
             'A browser extension created for adding custom features like downloading video files and subtitles from HDrezka and its mirrors.',
         icons: {
