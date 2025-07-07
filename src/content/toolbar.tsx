@@ -150,7 +150,7 @@ class CDNPlayerWrapper {
     }
 
     async fetchVideoClosedCaptions(): Promise<SubtitlesSource[]> {
-        if(!CDNPlayerInfo.subtitle) return [];
+        if (!CDNPlayerInfo.subtitle) return [];
 
         const subtitlesLines = CDNPlayerInfo.subtitle.split(',');
         return subtitlesLines.map((line: string) => {
