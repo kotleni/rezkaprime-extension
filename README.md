@@ -40,10 +40,11 @@ RezkaPrime is a browser extension created for adding custom features like downlo
 
 ### Firefox
 
-1. Download the latest `.xpi` release from the [Releases page](https://github.com/kotleni/rezkaprime-extension/releases).
-2. Open Firefox and navigate to `about:addons`.
-3. Click the gear icon (⚙️) and select "Install Add-on From File...".
-4. Select the downloaded `.xpi` file.
+1. Download extension from Firefox Addons [here](https://addons.mozilla.org/en-US/firefox/addon/rezka-prime/).
+2. Or download the latest `.xpi` release from the [Releases page](https://github.com/kotleni/rezkaprime-extension/releases).
+3. Open Firefox and navigate to `about:addons`.
+4. Click the gear icon (⚙️) and select "Install Add-on From File...".
+5. Select the downloaded `.xpi` file.
 
 ## Building by youself
 1. Clone this repository `$ git clone https://github.com/kotleni/rezkaprime-extension`
