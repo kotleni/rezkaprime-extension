@@ -6,7 +6,19 @@ const { exec } = require('child_process');
 const SRC_DIR = path.join(__dirname, 'dist');
 const BUILD_DIR = path.join(__dirname, 'builds');
 
+function getTargetBrowser() {
+  const arg = process.argv.slice(2).find(a => a.startsWith('--browser='));
+  if (!arg) {
+    console.error('❌ Error: Target browser not specified.');
+    console.error('   Usage: node package.cjs --browser=<chrome|firefox>');
+    process.exit(1);
+  }
+  return arg.split('=')[1]?.toLowerCase();
+}
+
 async function main() {
+  const targetBrowser = getTargetBrowser();
+
   try {
     // Read manifest to get extension name and version
     const manifestPath = path.join(SRC_DIR, 'manifest.json');
@@ -17,14 +29,21 @@ async function main() {
     const sanitizedName = name.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
     const fileNameBase = `${sanitizedName}-v${version}`;
 
-    console.log(`🚀 Starting packaging for ${name} v${version}...`);
+    console.log(`🚀 Starting packaging for ${targetBrowser}: ${name} v${version}...`);
 
     // Ensure the build directory exists
     await fs.mkdir(BUILD_DIR, { recursive: true });
 
     // Run packing for both browsers
-    await packForChrome(fileNameBase);
-    await packForFirefox(fileNameBase);
+    if(targetBrowser == 'chrome')
+      await packForChrome(fileNameBase);
+    else if(targetBrowser == 'firefox')
+      await packForFirefox(fileNameBase);
+    else {
+      console.error('❌ Unknown target browser', targetBrowser);
+      process.exit(1);
+      return;
+    }
 
     console.log('\n✅ All packages created successfully in the "builds" directory!');
 
