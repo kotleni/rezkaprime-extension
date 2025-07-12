@@ -1,3 +1,11 @@
+#popup-root {
+    width: 280px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
 .rezka-prime-toolbar {
   background: #e1e289;
   color: black;
@@ -53,6 +61,13 @@
 
 .loading-icon {
   animation: spin 1000ms linear infinite;
+}
+
+.domain-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 4px;
 }
 
 @-moz-keyframes spin {
