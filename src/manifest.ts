@@ -18,7 +18,7 @@ const createBaseManifest = (): Manifest => {
         action: {
             default_icon: 'icon48.png',
             default_title: 'RezkaPrime',
-            default_popup: 'index.html',
+            default_popup: 'src/popup/popup.html',
         },
         content_scripts: [
             {

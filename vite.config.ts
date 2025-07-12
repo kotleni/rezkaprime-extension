@@ -30,7 +30,7 @@ export default defineConfig(({mode}: {mode: string}) => {
         build: {
             rollupOptions: {
                 input: {
-                    popup: resolve(__dirname, 'index.html'),
+                    popup: resolve(__dirname, 'src/popup/popup.html'),
                     background: resolve(__dirname, 'src/background/main.ts'),
                     content: resolve(__dirname, 'src/content/main.tsx'),
                     styles: resolve(__dirname, 'src/index.css'),
